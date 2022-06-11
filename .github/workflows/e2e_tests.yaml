@@ -64,9 +64,7 @@ jobs:
           target: google_apis
           profile: Nexus 5X
           working-directory: tests
-          script: |
-            sleep 15
-            flutter drive --target=./test_driver/driver_e2e.dart --dart-define=CI=true
+          script: flutter test integration_test/integration_e2e_test.dart 
 
   ios:
     runs-on: macos-latest
