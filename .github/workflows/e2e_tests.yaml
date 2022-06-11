@@ -164,23 +164,11 @@ jobs:
           ./.github/workflows/scripts/install-tools.sh
           flutter config --enable-macos-desktop
           sudo npm i -g firebase-tools
-      - name: "Build Application"
-        working-directory: tests
-        run: |
-          export PATH="/usr/lib/ccache:/usr/local/opt/ccache/libexec:$PATH"
-          export CCACHE_SLOPPINESS=clang_index_store,file_stat_matches,include_file_ctime,include_file_mtime,ivfsoverlay,pch_defines,modules,system_headers,time_macros
-          export CCACHE_FILECLONE=true
-          export CCACHE_DEPEND=true
-          export CCACHE_INODECACHE=true
-          ccache -s
-          flutter build macos --debug --target=./test_driver/driver_e2e.dart --device-id=macos --dart-define=CI=true
-          ccache -s
       - name: Start Firebase Emulator
         run: cd ./.github/workflows/scripts && ./start-firebase-emulator.sh
       - name: "E2E Tests"
         working-directory: tests
-        run: |
-          flutter drive -d macos --target=./test_driver/driver_e2e.dart --dart-define=CI=true
+        run: flutter test integration_test/integration_e2e_test.dart -d macos --dart-define=CI=true
 
   web:
     runs-on: ubuntu-latest
