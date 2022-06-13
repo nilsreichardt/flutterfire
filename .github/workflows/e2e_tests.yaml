@@ -202,4 +202,4 @@ jobs:
         working-directory: tests
         run: |
           chromedriver --port=4444 &
-          flutter drive --verbose-system-logs --device-id=web-server --target=./test_driver/driver_e2e.dart --dart-define=CI=true
+          flutter test integration_test/integration_e2e_test.dart --device-id=web-server --dart-define=CI=true
