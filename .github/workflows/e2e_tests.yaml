@@ -139,18 +139,6 @@ jobs:
         with:
           distribution: "temurin"
           java-version: "11"
-      - uses: hendrikmuhs/ccache-action@v1
-        name: Xcode Compile Cache
-        with:
-          key: ${{ runner.os }}-macos-v2
-          max-size: 700M
-      - uses: actions/cache@v2
-        name: Pods Cache
-        id: pods-cache
-        with:
-          path: tests/macos/Pods
-          key: ${{ runner.os }}-pods-v2-${{ hashFiles('tests/macos/Podfile.lock') }}
-          restore-keys: ${{ runner.os }}-macos-pods-v1
       - name: Cache Firebase Emulator
         uses: actions/cache@v2
         with:
@@ -168,7 +156,12 @@ jobs:
         run: cd ./.github/workflows/scripts && ./start-firebase-emulator.sh
       - name: "E2E Tests"
         working-directory: tests
-        run: flutter test integration_test/integration_e2e_test.dart -d macos --dart-define=CI=true
+        run: |
+          flutter drive \
+            --driver=test_driver/integration_test.dart \
+            --target=integration_test/app_test.dart \
+            -d macos \
+            --dart-define=CI=true
 
   web:
     runs-on: ubuntu-latest
@@ -202,4 +195,8 @@ jobs:
         working-directory: tests
         run: |
           chromedriver --port=4444 &
-          flutter test integration_test/integration_e2e_test.dart --device-id=web-server --dart-define=CI=true
+          flutter drive \
+            --driver=test_driver/integration_test.dart \
+            --target=integration_test/e2e_test.dart \
+            -d web-server \
+            --dart-define=CI=true
