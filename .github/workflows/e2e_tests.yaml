@@ -79,18 +79,6 @@ jobs:
         with:
           distribution: "temurin"
           java-version: "11"
-      - uses: hendrikmuhs/ccache-action@v1
-        name: Xcode Compile Cache
-        with:
-          key: ${{ runner.os }}-ios-v3
-          max-size: 700M
-      - uses: actions/cache@v2
-        name: Pods Cache
-        id: pods-cache
-        with:
-          path: tests/ios/Pods
-          key: ${{ runner.os }}-pods-v3-${{ hashFiles('tests/ios/Podfile.lock') }}
-          restore-keys: ${{ runner.os }}-ios-pods-v2
       - name: Firebase Emulator Cache
         uses: actions/cache@v2
         with:
@@ -116,7 +104,7 @@ jobs:
           sleep 15
           # Uncomment following line to have simulator logs printed out for debugging purposes.
           # xcrun simctl spawn booted log stream --predicate 'eventMessage contains "flutter"' &
-          flutter test integration_test/integration_e2e_test.dart --dart-define=CI=true
+          flutter drive --driver=test_driver/integration_test.dart --target=integration_test/e2e_test.dart --dart-define=CI=true
           FLUTTER_DRIVE_EXIT_CODE=$?
           xcrun simctl shutdown "$SIMULATOR"
           exit $FLUTTER_DRIVE_EXIT_CODE
@@ -159,7 +147,7 @@ jobs:
         run: |
           flutter drive \
             --driver=test_driver/integration_test.dart \
-            --target=integration_test/app_test.dart \
+            --target=integration_test/e2e_test.dart \
             -d macos \
             --dart-define=CI=true
 
