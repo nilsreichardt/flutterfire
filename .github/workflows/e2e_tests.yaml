@@ -22,7 +22,7 @@ on:
 
 jobs:
   android:
-    runs-on: macos-latest
+    runs-on: macos-12
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v2
@@ -53,10 +53,6 @@ jobs:
           ./.github/workflows/scripts/install-tools.sh
           flutter config --no-enable-web --no-enable-ios --no-enable-macos-desktop
           sudo npm i -g firebase-tools
-      - name: "Build Application"
-        working-directory: tests
-        run: |
-          flutter build apk --debug --target=./test_driver/driver_e2e.dart --dart-define=CI=true --no-android-gradle-daemon
       - name: Start Firebase Emulator
         run: cd ./.github/workflows/scripts && ./start-firebase-emulator.sh
       - name: "E2E Tests"
@@ -68,9 +64,7 @@ jobs:
           target: google_apis
           profile: Nexus 5X
           working-directory: tests
-          script: |
-            sleep 15
-            flutter drive --target=./test_driver/driver_e2e.dart --dart-define=CI=true
+          script: flutter test integration_test/e2e_test.dart --dart-define=CI=true
 
   ios:
     runs-on: macos-latest
@@ -85,18 +79,6 @@ jobs:
         with:
           distribution: "temurin"
           java-version: "11"
-      - uses: hendrikmuhs/ccache-action@v1
-        name: Xcode Compile Cache
-        with:
-          key: ${{ runner.os }}-ios-v3
-          max-size: 700M
-      - uses: actions/cache@v2
-        name: Pods Cache
-        id: pods-cache
-        with:
-          path: tests/ios/Pods
-          key: ${{ runner.os }}-pods-v3-${{ hashFiles('tests/ios/Podfile.lock') }}
-          restore-keys: ${{ runner.os }}-ios-pods-v2
       - name: Firebase Emulator Cache
         uses: actions/cache@v2
         with:
@@ -109,17 +91,6 @@ jobs:
         run: |
           ./.github/workflows/scripts/install-tools.sh
           sudo npm i -g firebase-tools
-      - name: "Build Application"
-        working-directory: tests
-        run: |
-          export PATH="/usr/lib/ccache:/usr/local/opt/ccache/libexec:$PATH"
-          export CCACHE_SLOPPINESS=clang_index_store,file_stat_matches,include_file_ctime,include_file_mtime,ivfsoverlay,pch_defines,modules,system_headers,time_macros
-          export CCACHE_FILECLONE=true
-          export CCACHE_DEPEND=true
-          export CCACHE_INODECACHE=true
-          ccache -s
-          flutter build ios --no-codesign --simulator --debug --target=./test_driver/driver_e2e.dart --dart-define=CI=true
-          ccache -s
       - name: Start Firebase Emulator
         run: cd ./.github/workflows/scripts && ./start-firebase-emulator.sh
       - name: "E2E Tests"
@@ -133,7 +104,7 @@ jobs:
           sleep 15
           # Uncomment following line to have simulator logs printed out for debugging purposes.
           # xcrun simctl spawn booted log stream --predicate 'eventMessage contains "flutter"' &
-          flutter drive -d "$SIMULATOR" --target=./test_driver/driver_e2e.dart --dart-define=CI=true
+          flutter drive --driver=test_driver/integration_test.dart --target=integration_test/e2e_test.dart --dart-define=CI=true
           FLUTTER_DRIVE_EXIT_CODE=$?
           xcrun simctl shutdown "$SIMULATOR"
           exit $FLUTTER_DRIVE_EXIT_CODE
@@ -156,18 +127,6 @@ jobs:
         with:
           distribution: "temurin"
           java-version: "11"
-      - uses: hendrikmuhs/ccache-action@v1
-        name: Xcode Compile Cache
-        with:
-          key: ${{ runner.os }}-macos-v2
-          max-size: 700M
-      - uses: actions/cache@v2
-        name: Pods Cache
-        id: pods-cache
-        with:
-          path: tests/macos/Pods
-          key: ${{ runner.os }}-pods-v2-${{ hashFiles('tests/macos/Podfile.lock') }}
-          restore-keys: ${{ runner.os }}-macos-pods-v1
       - name: Cache Firebase Emulator
         uses: actions/cache@v2
         with:
@@ -181,23 +140,16 @@ jobs:
           ./.github/workflows/scripts/install-tools.sh
           flutter config --enable-macos-desktop
           sudo npm i -g firebase-tools
-      - name: "Build Application"
-        working-directory: tests
-        run: |
-          export PATH="/usr/lib/ccache:/usr/local/opt/ccache/libexec:$PATH"
-          export CCACHE_SLOPPINESS=clang_index_store,file_stat_matches,include_file_ctime,include_file_mtime,ivfsoverlay,pch_defines,modules,system_headers,time_macros
-          export CCACHE_FILECLONE=true
-          export CCACHE_DEPEND=true
-          export CCACHE_INODECACHE=true
-          ccache -s
-          flutter build macos --debug --target=./test_driver/driver_e2e.dart --device-id=macos --dart-define=CI=true
-          ccache -s
       - name: Start Firebase Emulator
         run: cd ./.github/workflows/scripts && ./start-firebase-emulator.sh
       - name: "E2E Tests"
         working-directory: tests
         run: |
-          flutter drive -d macos --target=./test_driver/driver_e2e.dart --dart-define=CI=true
+          flutter drive \
+            --driver=test_driver/integration_test.dart \
+            --target=integration_test/e2e_test.dart \
+            -d macos \
+            --dart-define=CI=true
 
   web:
     runs-on: ubuntu-latest
@@ -231,4 +183,8 @@ jobs:
         working-directory: tests
         run: |
           chromedriver --port=4444 &
-          flutter drive --verbose-system-logs --device-id=web-server --target=./test_driver/driver_e2e.dart --dart-define=CI=true
+          flutter drive \
+            --driver=test_driver/integration_test.dart \
+            --target=integration_test/e2e_test.dart \
+            -d web-server \
+            --dart-define=CI=true
