@@ -64,7 +64,7 @@ jobs:
           target: google_apis
           profile: Nexus 5X
           working-directory: tests
-          script: flutter test integration_test/integration_e2e_test.dart --dart-define=CI=true
+          script: flutter test integration_test/e2e_test.dart --dart-define=CI=true
 
   ios:
     runs-on: macos-latest
