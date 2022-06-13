@@ -171,7 +171,7 @@ class FirebaseMessaging extends FirebasePluginPlatform {
 
     /// Request permission for critical alerts. Defaults to `false`.
     ///
-    /// Note; your application must explicitly state reasoning for enabling
+    /// Note: your application must explicitly state reasoning for enabling
     /// critical alerts during the App Store review process or your may be
     /// rejected.
     ///
