@@ -14,11 +14,6 @@ jobs:
   analyze:
     timeout-minutes: 30
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        test1: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-        test2: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
     steps:
       - uses: actions/checkout@v2
       - name: "Install Flutter"
@@ -36,6 +31,11 @@ jobs:
             dart pub publish --dry-run
 
   pub_get_check:
+    strategy:
+      fail-fast: false
+      matrix:
+        test1: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        test2: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
     timeout-minutes: 30
     runs-on: ubuntu-latest
     steps:
