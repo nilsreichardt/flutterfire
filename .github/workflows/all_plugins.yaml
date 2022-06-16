@@ -16,9 +16,9 @@ jobs:
       fail-fast: false
       matrix:
         test1: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-        test2: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        test2: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
         test3: [1, 2]
-    timeout-minutes: 90
+    timeout-minutes: 30
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -37,12 +37,6 @@ jobs:
             dart pub publish --dry-run
 
   pub_get_check:
-    strategy:
-      fail-fast: false
-      matrix:
-        test1: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-        test2: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-        test3: [1, 2]
     timeout-minutes: 90
     runs-on: ubuntu-latest
     steps:
@@ -58,12 +52,6 @@ jobs:
             "flutter pub get"
 
   format:
-    strategy:
-      fail-fast: false
-      matrix:
-        test1: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-        test2: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-        test3: [1, 2]
     runs-on: ubuntu-latest
     timeout-minutes: 90
     steps:
@@ -95,12 +83,6 @@ jobs:
           ./.github/workflows/scripts/validate-formatting.sh
 
   build_examples_dart:
-    strategy:
-      fail-fast: false
-      matrix:
-        test1: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-        test2: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-        test3: [1, 2]
     timeout-minutes: 90
     runs-on: ubuntu-latest
     steps:
@@ -119,12 +101,6 @@ jobs:
             "flutter build web --no-pub"
 
   test:
-    strategy:
-      fail-fast: false
-      matrix:
-        test1: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-        test2: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-        test3: [1, 2]
     runs-on: ubuntu-latest
     timeout-minutes: 90
     steps:
