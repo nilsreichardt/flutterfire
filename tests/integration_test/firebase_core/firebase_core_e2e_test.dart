@@ -58,8 +58,8 @@ void main() {
         await app.delete();
 
         expect(Firebase.apps.length, 1);
-        // TODO(russellwheatley): test randomly causes an auth sign-in failure due to duplicate accounts.
       },
+      // TODO(russellwheatley): test randomly causes an auth sign-in failure due to duplicate accounts.
       skip: TargetPlatform.android == defaultTargetPlatform,
     );
 
